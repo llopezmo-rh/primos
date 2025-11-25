@@ -26,7 +26,7 @@
 
 // print_power prints a power with the format "(<base>^<exponent)". If the
 // exponent is 1, it just prints the base
-void print_power(const mpz_t base, const mpz_t exp)
+static void print_power(const mpz_t base, const mpz_t exp)
     {
     if (mpz_cmp_ui(exp, 1) == 0)
         mpz_out_str(stdout, RADIX, base);
