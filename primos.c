@@ -36,7 +36,7 @@
 #define RADIX 10
 
 
-void usage()
+static void usage(void)
 	{
 	fprintf
 		(
