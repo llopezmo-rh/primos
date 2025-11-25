@@ -1,21 +1,22 @@
 #include <gmp.h>
+#include <stdbool.h>
 
 // find_divisor stores on "divisor" the first divisor of "n" found different to 1.
 // If none is found, it will set "divisor" to 1.
-// It returns 0 (false) if no divisor different to 1 has been found. Otherwise 1.
+// It returns false if no divisor different to 1 has been found. Otherwise true.
 // "divisor" must have been initialized before calling the function
-int find_divisor(mpz_t divisor, const mpz_t n)
+bool find_divisor(mpz_t divisor, const mpz_t n)
 	{
 	mpz_t i, last_divisor;
 	if (mpz_cmp_ui(n, 2) == 0)
 		{       
 		mpz_set_ui(divisor, 1);
-		return 0;
+		return false;
 		}
 	if (mpz_even_p(n))
 		{
 		mpz_set_ui(divisor, 2);
-		return 1;
+		return true;
 		}     
 	mpz_set_ui(divisor, 1);
 	mpz_init_set_ui(i, 3);

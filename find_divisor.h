@@ -2,7 +2,8 @@
 #define FIND_DIVISOR_H
 
 #include <gmp.h>
+#include <stdbool.h>
 
-int find_divisor(mpz_t divisor, const mpz_t n);
+bool find_divisor(mpz_t divisor, const mpz_t n);
 
 #endif
