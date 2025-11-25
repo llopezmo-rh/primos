@@ -1,5 +1,9 @@
 # What does "primos" do?
 
+Two different executable files are provided, which are described below.
+
+## primos
+
 It is a simple prime-number prospector for GNU/Linux. It looks for prime numbers in an infinite loop starting from the number passed as an argument. For example:
 ```
 $ primos 55555
@@ -35,6 +39,16 @@ primos 1000000000000000000000000000000000000000000000000000000000000000000000000
 [...]
 ```
 
+## factor
+
+It factors a number. Output example:
+
+~~~
+$ factor 1953
+1953 = (3^2) * 7 * 31
+~~~
+
+As well as primos, there is no limit for the lenght of the numbers to calculate
 
 # Compilation
 
@@ -43,11 +57,19 @@ primos 1000000000000000000000000000000000000000000000000000000000000000000000000
 
 ## How to compile
 ```
-$ gcc primos.c -o primos -lgmp
+$ make
+gcc -O3 -march=native -flto -Wall -Wextra -c factor.c
+gcc -O3 -march=native -flto -Wall -Wextra -c find_divisor.c
+gcc -O3 -march=native -flto -Wall -Wextra -o factor factor.o find_divisor.o -lgmp
+gcc -O3 -march=native -flto -Wall -Wextra -c primos.c
+gcc -O3 -march=native -flto -Wall -Wextra -o primos primos.o find_divisor.o -lgmp
 ```
 
-
 # Execution
+~~~
+$ factor
+Usage: <executable_file> <natural_number>
+~~~
 ```
 $ primos -h
 Usage: <executable_file> [-b] [-h] [-n <opt_n_output>] [-p] <starting_value>
