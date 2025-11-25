@@ -64,6 +64,13 @@ int main(int argc, char *argv[])
     // Removing buffer in order to send output to stdout immediately
     setbuf(stdout, NULL);
 
+	// Check arguments
+	if (argc != 2)
+		{
+		fprintf(stderr,"Usage: <executable_file> <natural_number>\n");
+		return 1;
+		}
+
     // Initializing and validating variables
     if (mpz_init_set_str(dividend, argv[1], RADIX) == -1)
         {
