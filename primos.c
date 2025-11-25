@@ -70,7 +70,7 @@ int find_divisor(mpz_t divisor, const mpz_t n)
 	mpz_set_ui(divisor, 1);
 	mpz_init_set_ui(i, 3);
 	mpz_init(last_divisor);
-	mpz_cdiv_q_ui(last_divisor, n, 2);
+	mpz_sqrt(last_divisor, n);
 	while (mpz_cmp(i, last_divisor) <= 0)
 		{
 		if (mpz_divisible_p(n, i))
@@ -79,10 +79,7 @@ int find_divisor(mpz_t divisor, const mpz_t n)
 			break;
 			}
 		else
-			{
-			mpz_cdiv_q(last_divisor, n, i);
 			mpz_add_ui(i, i, 2);
-			}
 		}
 	mpz_clear(i);
 	mpz_clear(last_divisor);
