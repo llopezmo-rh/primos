@@ -27,7 +27,7 @@
 
 // Strings will be reallocated when the results exceed their size. 
 // The new size of the string will be the size of the results plus EXTEND_LENGTH
-#define EXTEND_LENGTH 2
+#define EXTEND_LENGTH 5
 
 // Colour code used for lines showing found prime numbers
 #define RED "31"
@@ -138,7 +138,17 @@ int main(int argc, char *argv[])
 			{
 			length = mpz_sizeinbase(i, RADIX) + EXTEND_LENGTH;
 			i_str = (char*) realloc(i_str, sizeof(char) * length);
-        		divisor_str = (char*) realloc(divisor_str, sizeof(char) * length);
+			if (i_str == NULL)
+				{
+				fprintf(stderr, "Error reallocating i_str variable\n");
+				return 1;
+				}
+			divisor_str = (char*) realloc(divisor_str, sizeof(char) * length);
+			if (divisor_str == NULL)
+				{
+				fprintf(stderr, "Error reallocating divisor_str variable\n");
+				return 1;
+				}
 			}
 		mpz_get_str(i_str, RADIX, i);
 		if (i_str[strlen(i_str) - 1] == '5')
