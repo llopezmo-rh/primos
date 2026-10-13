@@ -31,9 +31,14 @@
 
 // Colour code used for lines showing found prime numbers
 #define RED "31"
+#define YELLOW "93"
 
 // Radix for numbers in string format
 #define RADIX 10
+
+// "reps" argument for mpz_probab_prime_p
+// https://gmplib.org/manual/Number-Theoretic-Functions#index-mpz_005fprobab_005fprime_005fp
+#define REPS 50
 
 
 static void usage(void)
@@ -48,7 +53,8 @@ static void usage(void)
 		"-b: Stop execution when a prime number is found.\n"
 		"-h: show this help text.\n"
 		"-n <opt_n_output>: limit amount of numbers to calculate. With -p only prime numbers will be count.\n"
-		"-p: show only prime numbers.\n"
+		"-o: show only prime numbers.\n"
+		"-p: if a number is probably prime, notify it and continue.\n"
 		);
 	}
 
@@ -61,14 +67,15 @@ int main(int argc, char *argv[])
 	// strtoul returns 0 if the string is not a number, but it returns a big
 	// number if the string is a negative number (it starts with "-")
 	int opt;
-	int opt_prime_break = 0;
-	int opt_only_prime = 0;
+	bool opt_prime_break = false;
+	bool opt_only_prime = false;
+	bool opt_probab = false;
 	unsigned long int opt_n_output = 0;
-	while ((opt = getopt (argc, argv, "bhn:p")) != -1)
+	while ((opt = getopt (argc, argv, "bhn:op")) != -1)
 		switch (opt)
 			{
 			case 'b':
-				opt_prime_break = 1;
+				opt_prime_break = true;
 				break;
 			case 'h':
 				usage();
@@ -81,8 +88,11 @@ int main(int argc, char *argv[])
 					return 1;
 					}
 				break;
+			case 'o':
+				opt_only_prime = true;
+				break;
 			case 'p':
-				opt_only_prime = 1;
+				opt_probab = true;
 				break;
 			default:
 				usage();
@@ -150,13 +160,30 @@ int main(int argc, char *argv[])
 				return 1;
 				}
 			}
+
+		// Continue if the (odd) number finishes with 5 because it will never be prime (multiple of 5)
 		mpz_get_str(i_str, RADIX, i);
 		if (i_str[strlen(i_str) - 1] == '5')
 			{
 			mpz_add_ui(i, i, 2);
 			continue;
 			}
-		if (find_divisor(divisor, i))
+
+		// Try with mpz_probab_prime_p before searching for a divisor
+		int probab = mpz_probab_prime_p(i, REPS);
+		if (probab == 2)
+			{
+			printf("\033[0;%sm%s is prime\n\033[0m", RED, i_str);
+			if (opt_prime_break)
+				break;
+			}
+		else if (opt_probab && probab == 1)
+			{
+			printf("\033[0;%sm%s is very likely prime\n\033[0m", YELLOW, i_str);
+			if (opt_prime_break)
+				break;
+			}
+		else if (find_divisor(divisor, i))
 			{
 			mpz_get_str(divisor_str, RADIX, divisor);
 			if (opt_only_prime)
@@ -170,6 +197,7 @@ int main(int argc, char *argv[])
 			if (opt_prime_break)
 				break;
 			}
+		
 		//mpz_clear(divisor);
 		mpz_add_ui(i, i, 2);
 		if (opt_n_output > 0 && ++count >= opt_n_output)
