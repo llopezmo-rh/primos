@@ -23,6 +23,10 @@
 // Radix of numbers expressed as strings
 #define RADIX 10
 
+// "reps" argument for mpz_probab_prime_p
+// https://gmplib.org/manual/Number-Theoretic-Functions#index-mpz_005fprobab_005fprime_005fp
+#define REPS 50
+
 
 // print_power prints a power with the format "(<base>^<exponent)". If the
 // exponent is 1, it just prints the base
@@ -84,14 +88,21 @@ int main(int argc, char *argv[])
             "factored\n");
         return 1;
         }
-
-    // Initializing
     mpz_init(exp);
     mpz_init_set_ui(previous_divisor, 0);
     mpz_init(divisor);
 
     // Printing CLI argument, which will be the number to be factored
     printf("%s = ", argv[1]);
+
+    // For the sake of performance, use mpz_probab_prime_p to know whether
+    // the number is prime before searching for divisors
+    if (mpz_probab_prime_p(dividend, REPS) == 2)
+        {
+        mpz_out_str(stdout, RADIX, dividend);
+        printf("\n");
+        return 0;
+        }
 
     // Loop where factors will be found and printed
     for(;;)
