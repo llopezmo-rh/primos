@@ -22,13 +22,6 @@
 #include <string.h>
 
 
-// Initial size of strings where the results will be stored
-#define INIT_LENGTH 10
-
-// Strings will be reallocated when the results exceed their size. 
-// The new size of the string will be the size of the results plus EXTEND_LENGTH
-#define EXTEND_LENGTH 5
-
 // Colour code used for lines showing found prime numbers
 #define RED "31"
 #define YELLOW "93"
@@ -116,10 +109,10 @@ int main(int argc, char *argv[])
 		return 2;
 		}
 		
-	// Checking whether "i" is equal to 2 and initialize variable to
+	// Checking whether "i" is equal to 2 or 5 and initialize variable to
 	// count how many numbers are being calculated
 	unsigned long int count = 0;
-	if (mpz_cmp_ui(i, 2) == 0)
+	if (mpz_cmp_ui(i, 2) == 0 || mpz_cmp_ui(i, 5) == 0)
 		{
 		printf("\033[0;%sm2 is prime\n\033[0m", RED);
 		if (opt_prime_break)
@@ -133,37 +126,13 @@ int main(int argc, char *argv[])
 	if (mpz_even_p(i))
 		mpz_add_ui(i, i, 1);
 	
-	// Starting the loop. "i" will be increased 2 units per interaction in
-	// order to skip even numbers.
-	// As well as even numbers, the ones whose last cipher is 5 are never prime
-	// and will not be printed.
-	unsigned int length = INIT_LENGTH;
-	char* i_str = (char*) malloc(sizeof(char) * length);
-	char* divisor_str = (char*) malloc(sizeof(char) * length);
+	// Find divisors
 	mpz_t divisor;
 	mpz_init(divisor);
 	for (;;)
 		{
-		if (mpz_sizeinbase(i, RADIX) > length)
-			{
-			length = mpz_sizeinbase(i, RADIX) + EXTEND_LENGTH;
-			i_str = (char*) realloc(i_str, sizeof(char) * length);
-			if (i_str == NULL)
-				{
-				fprintf(stderr, "Error reallocating i_str variable\n");
-				return 1;
-				}
-			divisor_str = (char*) realloc(divisor_str, sizeof(char) * length);
-			if (divisor_str == NULL)
-				{
-				fprintf(stderr, "Error reallocating divisor_str variable\n");
-				return 1;
-				}
-			}
-
 		// Continue if the (odd) number finishes with 5 because it will never be prime (multiple of 5)
-		mpz_get_str(i_str, RADIX, i);
-		if (i_str[strlen(i_str) - 1] == '5')
+		if (mpz_fdiv_ui(i, 10) == 5)
 			{
 			mpz_add_ui(i, i, 2);
 			continue;
@@ -173,27 +142,27 @@ int main(int argc, char *argv[])
 		int probab = mpz_probab_prime_p(i, REPS);
 		if (probab == 2)
 			{
-			printf("\033[0;%sm%s is prime\n\033[0m", RED, i_str);
+			// gmp_printf uses the specifier %Zd
+			gmp_printf("\033[0;%sm%Zd is prime\n\033[0m", RED, i);
 			if (opt_prime_break)
 				break;
 			}
 		else if (opt_probab && probab == 1)
 			{
-			printf("\033[0;%sm%s is very likely prime\n\033[0m", YELLOW, i_str);
+			gmp_printf("\033[0;%sm%Zd is very likely prime\n\033[0m", YELLOW, i);
 			if (opt_prime_break)
 				break;
 			}
 		else if (find_divisor(divisor, i))
 			{
-			mpz_get_str(divisor_str, RADIX, divisor);
 			if (opt_only_prime)
 				count--;
 			else 
-				printf("%s is divisible by %s\n", i_str, divisor_str);
+				gmp_printf("%Zd is divisible by %Zd\n", i, divisor);
 			}
 		else
 			{
-			printf("\033[0;%sm%s is prime\n\033[0m", RED, i_str);
+			gmp_printf("\033[0;%sm%Zd is prime\n\033[0m", RED, i);
 			if (opt_prime_break)
 				break;
 			}
