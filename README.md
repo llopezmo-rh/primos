@@ -70,7 +70,7 @@ gcc -O3 -march=native -flto -Wall -Wextra -o primos primos.o find_divisor.o -lgm
 $ factor
 Usage: <executable_file> <natural_number>
 ~~~
-```
+~~~
 $ primos -h
 Usage: <executable_file> [-b] [-h] [-n <opt_n_output>] [-p] <starting_value>
 
@@ -82,5 +82,6 @@ Options:
 -b: Stop execution when a prime number is found.
 -h: show this help text.
 -n <opt_n_output>: limit amount of numbers to calculate. With -p only prime numbers will be count.
--p: show only prime numbers.
-```
+-o: show only prime numbers.
+-p: if a number is probably prime, notify it and continue.
+~~~
